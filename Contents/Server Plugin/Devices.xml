@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+
+<Devices>
+
+		<Device type="custom" id="irrigation_schedule_device">
+			<Name>Irrigation Schedule</Name>
+			<ConfigUI>
+
+				<Field id="label1" type="label" >
+					<Label>Create an Irrigation Schedule Device...</Label>
+				</Field>
+
+				<Field id='realIrrDevice' type='menu'>
+					<Label>Select the actual Irrigation device:</Label>
+					<List class='indigo.devices' filter='indigo.sprinkler'/>
+				</Field>
+
+				<Field id='number_of_zones' type='menu'>
+					<Label>Select the number of zones this device has</Label>
+					<List>
+						<Option value="1">1</Option>
+						<Option value="2">2</Option>
+						<Option value="3">3</Option>
+						<Option value="4">4</Option>
+						<Option value="5">5</Option>
+						<Option value="6">6</Option>
+						<Option value="7">7</Option>
+						<Option value="8">8</Option>
+					</List>
+				</Field>
+
+				￼<Field id="simpleSeparator1" type="separator"/>
+
+				<Field id='zone_times_text' type='label'>
+					<Label>Set zone durations with a variable.  Example: If you have 8 zones and want zones 1-4 to run for 5 minutes and zones 5-8 to not run at all, your seleceted zone times variable value should look like this: 5,5,5,5,0,0,0,0</Label>
+				</Field>
+
+				<Field id='zone_times_variable' type='menu'>
+					<Label></Label>
+					<List class='indigo.variables'/>
+				</Field>
+
+				￼<Field id="simpleSeparator2" type="separator"/>
+
+				<Field id='start_time_text' type='label'>
+					<Label>Set schedule start time with a variable.  Time must be formated precicely as "5:00 AM" or "5:23 PM" etc.</Label>
+				</Field>
+
+				<Field id='start_time_variable' type='menu'>
+					<Label></Label>
+					<List class='indigo.variables'/>
+				</Field>
+
+				<Field id="simpleSeparator3" type="separator"/>
+
+				<Field id='real_schedule_text' type='label'>
+					<Label>Set schedule to be used</Label>
+				</Field>
+
+				<Field id='real_schedule' type='menu'>
+					<Label></Label>
+					<List class='indigo.schedules'/>
+				</Field>
+
+				<!-- <Field id="simpleSeparator3" type="separator"/>
+
+				<Field id='run_single_text' type='label'>
+					<Label>Set zone durations for the "Run Single Zone" action with a variable.</Label>
+				</Field>
+
+				<Field id='run_single_zone_time_variable' type='menu'>
+					<Label></Label>
+					<List class='indigo.variables'/>
+				</Field> -->
+
+			</ConfigUI>
+
+			<States>
+
+				<State id='scheduled_days'>
+					<ValueType>String</ValueType>
+					<TriggerLabel>Scheduled Days</TriggerLabel>
+					<ControlPageLabel>Scheduled Days</ControlPageLabel>
+				</State>
+
+				<State id='scheduled_start_time'>
+					<ValueType>String</ValueType>
+					<TriggerLabel>Schedule Start Time</TriggerLabel>
+					<ControlPageLabel>Schedule Start Time</ControlPageLabel>
+				</State>
+
+				<State id='zone_times'>
+					<ValueType>String</ValueType>
+					<TriggerLabel>Zone Times</TriggerLabel>
+					<ControlPageLabel>Zone Times</ControlPageLabel>
+				</State>
+
+				<State id='monday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Monday</TriggerLabel>
+					<ControlPageLabel>Monday</ControlPageLabel>
+				</State>
+
+				<State id='tuesday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Tuesday</TriggerLabel>
+					<ControlPageLabel>Tuesday</ControlPageLabel>
+				</State>
+
+				<State id='wednesday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Wednesday</TriggerLabel>
+					<ControlPageLabel>Wednesday</ControlPageLabel>
+				</State>
+
+				<State id='thursday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Thursday</TriggerLabel>
+					<ControlPageLabel>Thursday</ControlPageLabel>
+				</State>
+
+				<State id='friday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Friday</TriggerLabel>
+					<ControlPageLabel>Friday</ControlPageLabel>
+				</State>
+
+				<State id='saturday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Saturday</TriggerLabel>
+					<ControlPageLabel>Saturday</ControlPageLabel>
+				</State>
+
+				<State id='sunday' defaultValue='false'>
+					<ValueType>Boolean</ValueType>
+					<TriggerLabel>Sunday</TriggerLabel>
+					<ControlPageLabel>Sunday</ControlPageLabel>
+				</State>
+
+			</States>
+		</Device>
+
+</Devices>

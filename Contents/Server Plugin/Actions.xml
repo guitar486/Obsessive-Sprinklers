@@ -1,0 +1,52 @@
+<Actions>
+
+  <Action id="set_scheduled_days" deviceFilter='self'>
+    <Name>Set Day</Name>
+    <ConfigUI>
+      <Field type="menu" id="action" defaultValue="item1">
+      	<Label>Set Day:</Label>
+
+      	<List>
+      		<Option value="monday_true">Monday True</Option>
+      		<Option value="monday_false">Monday False</Option>
+          <Option value="monday_toggle">Monday Toggle</Option>
+          <Option value="tuesday_true">Tuesday True</Option>
+      		<Option value="tuesday_false">Tuesday False</Option>
+          <Option value="tuesday_toggle">Tuesday Toggle</Option>
+          <Option value="wednesday_true">Wednesday True</Option>
+      		<Option value="wednesday_false">Wednesday False</Option>
+          <Option value="wednesday_toggle">Wednesday Toggle</Option>
+          <Option value="thursday_true">Thursday True</Option>
+      		<Option value="thursday_false">Thursday False</Option>
+          <Option value="thursday_toggle">Thursday Toggle</Option>
+          <Option value="friday_true">Friday True</Option>
+      		<Option value="friday_false">Friday False</Option>
+          <Option value="friday_toggle">Friday Toggle</Option>
+          <Option value="saturday_true">Saturday True</Option>
+      		<Option value="saturday_false">Saturday False</Option>
+          <Option value="saturday_toggle">Saturday Toggle</Option>
+          <Option value="sunday_true">Sunday True</Option>
+      		<Option value="sunday_false">Sunday False</Option>
+          <Option value="sunday_toggle">Sunday Toggle</Option>
+      	</List>
+      </Field>
+    </ConfigUI>
+    <CallbackMethod>set_scheduled_days</CallbackMethod>
+  </Action>
+
+  <Action id="set_scheduled_start_time" deviceFilter='self'>
+    <Name>Set Start Time</Name>
+    <CallbackMethod>set_scheduled_start_time</CallbackMethod>
+  </Action>
+
+  <Action id='run_schedule' deviceFilter='self'>
+    <Name>Run Schedule</Name>
+    <CallbackMethod>run_schedule</CallbackMethod>
+  </Action>
+
+  <!-- <Action id='run_single_zone' deviceFilter='self'>
+    <Name>Run Single Zone</Name>
+    <CallbackMethod>run_single_zone</CallbackMethod>
+  </Action> -->
+
+</Actions>
