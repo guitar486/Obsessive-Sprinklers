@@ -182,14 +182,27 @@ class Plugin(indigo.PluginBase):
         '''.format(schedule_name = asquote(device.name), schedule_days = asquote(newDays))
         asrun(ascript)
 
+    ####################################################################################################
+    # Subscribe to all changes in any Indigo variable value
+    ####################################################################################################
+    indigo.variables.subscribeToChanges()
+    def variableUpdated(self, origVar, newVar):
+
+        # Create dict of start time variables as selected in device setup
+        start_time_vars = {}
+        for deviceId, device in self.device_dict.items():
+            start_time_vars[str(device.pluginProps.get('start_time_variable', ''))] = device
+
+        # If start Time var changed, run set_scheduled_start_time() to update the actual Indigo schedule
+        for var, device in start_time_vars.items():
+            if var == str(origVar.id):
+                self.set_scheduled_start_time(device, device.id)
 
     ####################################################################################################
     # Set the schedule start time
     ####################################################################################################
-    def set_scheduled_start_time(self, pluginAction):
+    def set_scheduled_start_time(self, device, deviceId):
 
-        deviceId = pluginAction.deviceId
-        device = self.device_dict.get(str(deviceId))
         scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
 
         newStartTime = indigo.variables[int(device.pluginProps.get('start_time_variable', ''))].value
