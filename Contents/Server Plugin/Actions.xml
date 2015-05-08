@@ -34,11 +34,6 @@
     <CallbackMethod>set_scheduled_days</CallbackMethod>
   </Action>
 
-  <Action id="set_scheduled_start_time" deviceFilter='self'>
-    <Name>Set Start Time</Name>
-    <CallbackMethod>set_scheduled_start_time</CallbackMethod>
-  </Action>
-
   <Action id='run_schedule' deviceFilter='self'>
     <Name>Run Schedule</Name>
     <CallbackMethod>run_schedule</CallbackMethod>
