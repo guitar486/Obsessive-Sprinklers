@@ -27,10 +27,7 @@ class Plugin(indigo.PluginBase):
         if str(device.id) not in self.device_dict.keys():
             self.device_dict[str(device.id)] = device
 
-        # Create dict of start time variables as selected in device setup
-        self.start_time_vars = {}
-        for deviceId, device in self.device_dict.items():
-            self.start_time_vars[str(device.pluginProps.get('start_time_variable', ''))] = device
+        indigo.variables.subscribeToChanges()
 
     ####################################################################################################
     # Update device in our device_dict if anything changes
@@ -64,6 +61,7 @@ class Plugin(indigo.PluginBase):
 
         action = pluginAction.pluginTypeId
         dayList = list(device.states.get('scheduled_days', ''))
+        scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
 
         # Monday
         if pluginAction.props['action'] == 'monday_true':
@@ -164,8 +162,6 @@ class Plugin(indigo.PluginBase):
         ####
         indigo.server.log(str(device.name))
 
-        self.sleep(.1)
-
         ####
         indigo.server.log(device.states.get('scheduled_days', ''))
         ####
@@ -184,17 +180,21 @@ class Plugin(indigo.PluginBase):
         	set days of week of theSchedule to {schedule_days}
 
         end tell
-        '''.format(schedule_name = asquote(device.name), schedule_days = asquote(newDays))
+        '''.format(schedule_name = asquote(scheduleName), schedule_days = asquote(newDays))
         asrun(ascript)
 
     ####################################################################################################
     # Subscribe to all changes in any Indigo variable value
     ####################################################################################################
-    indigo.variables.subscribeToChanges()
     def variableUpdated(self, origVar, newVar):
 
+        # Create dict of start time variables as selected in device setup
+        start_time_vars = {}
+        for deviceId, device in self.device_dict.items():
+            start_time_vars[str(device.pluginProps.get('start_time_variable', ''))] = device
+
         # If start Time var changed, run set_scheduled_start_time() to update the actual Indigo schedule
-        for var, device in self.start_time_vars.items():
+        for var, device in start_time_vars.items():
             if var == str(origVar.id):
                 self.set_scheduled_start_time(device, device.id)
 

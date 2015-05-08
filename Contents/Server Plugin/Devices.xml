@@ -3,7 +3,7 @@
 <Devices>
 
 		<Device type="custom" id="irrigation_schedule_device">
-			<Name>Irrigation Schedule Device Setup</Name>
+			<Name>Irrigation Schedule Device</Name>
 			<ConfigUI>
 
 				<Field id='realIrrDevice' type='menu'>
