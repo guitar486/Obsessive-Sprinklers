@@ -27,6 +27,11 @@ class Plugin(indigo.PluginBase):
         if str(device.id) not in self.device_dict.keys():
             self.device_dict[str(device.id)] = device
 
+        # Create dict of start time variables as selected in device setup
+        self.start_time_vars = {}
+        for deviceId, device in self.device_dict.items():
+            self.start_time_vars[str(device.pluginProps.get('start_time_variable', ''))] = device
+
     ####################################################################################################
     # Update device in our device_dict if anything changes
     ####################################################################################################
@@ -188,13 +193,8 @@ class Plugin(indigo.PluginBase):
     indigo.variables.subscribeToChanges()
     def variableUpdated(self, origVar, newVar):
 
-        # Create dict of start time variables as selected in device setup
-        start_time_vars = {}
-        for deviceId, device in self.device_dict.items():
-            start_time_vars[str(device.pluginProps.get('start_time_variable', ''))] = device
-
         # If start Time var changed, run set_scheduled_start_time() to update the actual Indigo schedule
-        for var, device in start_time_vars.items():
+        for var, device in self.start_time_vars.items():
             if var == str(origVar.id):
                 self.set_scheduled_start_time(device, device.id)
 
