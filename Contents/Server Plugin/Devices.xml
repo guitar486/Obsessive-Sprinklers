@@ -3,36 +3,18 @@
 <Devices>
 
 		<Device type="custom" id="irrigation_schedule_device">
-			<Name>Irrigation Schedule</Name>
+			<Name>Irrigation Schedule Device Setup</Name>
 			<ConfigUI>
 
-				<Field id="label1" type="label" >
-					<Label>Create an Irrigation Schedule Device...</Label>
-				</Field>
-
 				<Field id='realIrrDevice' type='menu'>
-					<Label>Select the actual Irrigation device:</Label>
+					<Label>Select the actual Indigo irrigation device:</Label>
 					<List class='indigo.devices' filter='indigo.sprinkler'/>
-				</Field>
-
-				<Field id='number_of_zones' type='menu'>
-					<Label>Select the number of zones this device has</Label>
-					<List>
-						<Option value="1">1</Option>
-						<Option value="2">2</Option>
-						<Option value="3">3</Option>
-						<Option value="4">4</Option>
-						<Option value="5">5</Option>
-						<Option value="6">6</Option>
-						<Option value="7">7</Option>
-						<Option value="8">8</Option>
-					</List>
 				</Field>
 
 				￼<Field id="simpleSeparator1" type="separator"/>
 
 				<Field id='zone_times_text' type='label'>
-					<Label>Set zone durations with a variable.  Example: If you have 8 zones and want zones 1-4 to run for 5 minutes and zones 5-8 to not run at all, your seleceted zone times variable value should look like this: 5,5,5,5,0,0,0,0</Label>
+					<Label>Select the variable you will use to set comma-separated zone durations in minutes.  Example: If you have 8 zones and you want zones 1-4 to run for 5 minutes and zones 5-8 to not run at all, your seleceted zone times variable value should look like this: 5,5,5,5,0,0,0,0</Label>
 				</Field>
 
 				<Field id='zone_times_variable' type='menu'>
@@ -43,7 +25,7 @@
 				￼<Field id="simpleSeparator2" type="separator"/>
 
 				<Field id='start_time_text' type='label'>
-					<Label>Set schedule start time with a variable.  Time must be formated precicely as "5:00 AM" or "5:23 PM" etc.</Label>
+					<Label>Select the variable you will use to set your schedule start time.  Time must be formated precicely as "5:00 AM" or "5:23 PM" etc.</Label>
 				</Field>
 
 				<Field id='start_time_variable' type='menu'>
@@ -54,7 +36,7 @@
 				<Field id="simpleSeparator3" type="separator"/>
 
 				<Field id='real_schedule_text' type='label'>
-					<Label>Set schedule to be used</Label>
+					<Label>Set schedule to be used.  This schedule will be modified by the device actions and above variables, and it's action should be: Obsessive Sprinklers => Run Schedule, and pick this device.</Label>
 				</Field>
 
 				<Field id='real_schedule' type='menu'>
