@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<MenuItems>
+
+  <MenuItem id='toggle_debugging'>
+    <Name>Toggle Debugging</Name>
+    <CallbackMethod>toggle_debugging</CallbackMethod>
+  </MenuItem>
+
+</MenuItems>

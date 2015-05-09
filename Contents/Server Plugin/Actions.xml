@@ -39,9 +39,4 @@
     <CallbackMethod>run_schedule</CallbackMethod>
   </Action>
 
-  <!-- <Action id='run_single_zone' deviceFilter='self'>
-    <Name>Run Single Zone</Name>
-    <CallbackMethod>run_single_zone</CallbackMethod>
-  </Action> -->
-
 </Actions>

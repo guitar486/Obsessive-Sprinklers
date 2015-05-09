@@ -21,6 +21,8 @@ class Plugin(indigo.PluginBase):
 
     def startup(self):
         indigo.server.log('Obsessive Sprinklers started.')
+
+        self.debugging = False
     ####################################################################################################
 	# Actions here execute every time communication is enabled to a device
 	####################################################################################################
@@ -51,8 +53,25 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     def deviceDeleted(self, device):
         if str(device.id) in self.device_dict.keys():
-            indigo.server.log('Deleted device: ' + str(device.name))
             del self.device_dict[str(device.id)]
+
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            indigo.server.log('Deleted device: ' + str(device.name))
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+
+    ####################################################################################################
+    # Toggle Debugging
+    ####################################################################################################
+    def toggle_debugging(self):
+        self.debugging = not self.debugging
+
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            if self.debugging == True:
+                indigo.server.log(str(self.device_dict.keys()))
+                indigo.server.log(str(self.real_device_dict.keys()))
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
 
     ####################################################################################################
     # Set Schedule Action
@@ -63,14 +82,19 @@ class Plugin(indigo.PluginBase):
 
         deviceId = pluginAction.deviceId
         device = self.device_dict.get(str(deviceId))
+        action = pluginAction.pluginTypeId
+        scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
 
         # Set a default value for state >>scheduled_days<< if this is a new device
         if device.states.get('scheduled_days', '') == '':
             device.updateStateOnServer('scheduled_days', value='0000000')
 
-        action = pluginAction.pluginTypeId
+            #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+            if self.debugging == True:
+                indigo.server.log('New device, initializing "scheduled_days" variable to "00000000"')
+            #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+
         dayList = list(device.states.get('scheduled_days', ''))
-        scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
 
         # Monday
         if pluginAction.props['action'] == 'monday_true':
@@ -168,16 +192,6 @@ class Plugin(indigo.PluginBase):
         newDays = ''.join(dayList)
         device.updateStateOnServer('scheduled_days', value=newDays)
 
-        ####
-        indigo.server.log(str(device.name))
-
-        ####
-        indigo.server.log(device.states.get('scheduled_days', ''))
-        ####
-        for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']:
-            state = device.states.get(day, '')
-            indigo.server.log(day + ': ' + str(state))
-
         ####################################################################################################
         # Update the actual Indigo schedule via Applescript
         ####################################################################################################
@@ -190,6 +204,18 @@ class Plugin(indigo.PluginBase):
 
         end tell
         '''.format(schedule_name = asquote(scheduleName), schedule_days = asquote(newDays))
+
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            indigo.server.log(str(device.name))
+            indigo.server.log(device.states.get('scheduled_days', ''))
+            for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']:
+                state = device.states.get(day, '')
+                indigo.server.log(day + ': ' + str(state))
+            indigo.server.log('Attempting applescript...')
+            indigo.server.log(ascript)
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+
         asrun(ascript)
 
     ####################################################################################################
@@ -214,6 +240,11 @@ class Plugin(indigo.PluginBase):
 
         scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
 
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            indigo.server.log('Schedule Name: ' + scheduleName)
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+
         newStartTime = indigo.variables[int(device.pluginProps.get('start_time_variable', ''))].value
 
         timeAddSeconds = list(newStartTime)
@@ -230,6 +261,12 @@ class Plugin(indigo.PluginBase):
 
         end tell
         '''.format(schedule_name = asquote(scheduleName), schedule_start_time = asquote('Thursday, January 1, 2015 at {time}'.format(time=newStartTime)))
+
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            indigo.server.log('Attempting applescript...')
+            indigo.server.log(ascript)
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
 
         asrun(ascript)
 
@@ -248,12 +285,10 @@ class Plugin(indigo.PluginBase):
 
         zoneTimes = zoneTimes.split(',')
 
-        indigo.server.log(str(device.states.get('zone_times', '')))
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
+        if self.debugging == True:
+            indigo.server.log(str(device.name))
+            indigo.server.log(str(device.states.get('zone_times', '')))
+        #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
 
         indigo.sprinkler.run(realDevice, schedule=[zoneTimes[0], zoneTimes[1], zoneTimes[2], zoneTimes[3], zoneTimes[4], zoneTimes[5], zoneTimes[6], zoneTimes[7]])
-
-    # def run_single_zone(self, pluginAction):
-    #
-    #     deviceId = pluginAction.deviceId
-    #     device = self.device_dict.get(str(deviceId))
-    #     realDevice = int(device.pluginProps.get('realIrrDevice', ''))
