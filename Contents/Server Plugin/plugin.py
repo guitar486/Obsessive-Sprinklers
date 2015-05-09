@@ -12,7 +12,9 @@ class Plugin(indigo.PluginBase):
     def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
         indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
 
+        # Dict's for storing devices
         self.device_dict = {}
+        self.real_device_dict = {}
 
     def __del__(self):
         indigo.PluginBase.__del__(self)
@@ -24,9 +26,18 @@ class Plugin(indigo.PluginBase):
 	####################################################################################################
     def deviceStartComm(self, device):
 
+        # Get real sprinkler device
+        real_irr_device = indigo.devices[int(device.pluginProps.get('realIrrDevice', ''))]
+
+        # Store schedule device in dict
         if str(device.id) not in self.device_dict.keys():
             self.device_dict[str(device.id)] = device
 
+        # Store real sprinkler device in dict
+        if (str(real_irr_device)) not in self.real_device_dict.keys():
+            self.real_device_dict[str(real_irr_device.name)] = real_irr_device
+
+        # Listen for any/all Indigo varible changes
         indigo.variables.subscribeToChanges()
 
     ####################################################################################################
@@ -53,9 +64,7 @@ class Plugin(indigo.PluginBase):
         deviceId = pluginAction.deviceId
         device = self.device_dict.get(str(deviceId))
 
-        ####################################################################################################
-        # Set a default value for state > scheduled_days < if this is a new device
-        ####################################################################################################
+        # Set a default value for state >>scheduled_days<< if this is a new device
         if device.states.get('scheduled_days', '') == '':
             device.updateStateOnServer('scheduled_days', value='0000000')
 

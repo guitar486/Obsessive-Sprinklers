@@ -14,7 +14,7 @@
 				￼<Field id="simpleSeparator1" type="separator"/>
 
 				<Field id='zone_times_text' type='label'>
-					<Label>Select the variable you will use to set comma-separated zone durations in minutes.  Example: If you have 8 zones and you want zones 1-4 to run for 5 minutes and zones 5-8 to not run at all, your seleceted zone times variable value should look like this: 5,5,5,5,0,0,0,0</Label>
+					<Label>Select the Indigo variable you will use to set comma-separated zone durations in minutes.  Example: If you have 8 zones and you want zones 1-4 to run for 5 minutes and zones 5-8 to not run at all, your seleceted zone times variable value should look like this: 5,5,5,5,0,0,0,0</Label>
 				</Field>
 
 				<Field id='zone_times_variable' type='menu'>
@@ -25,7 +25,7 @@
 				￼<Field id="simpleSeparator2" type="separator"/>
 
 				<Field id='start_time_text' type='label'>
-					<Label>Select the variable you will use to set your schedule start time.  Time must be formated precicely as "5:00 AM" or "5:23 PM" etc.</Label>
+					<Label>Select the Indigo variable you will use to set your schedule start time.  Time must be formated precicely as "5:00 AM" or "5:23 PM" etc.</Label>
 				</Field>
 
 				<Field id='start_time_variable' type='menu'>
@@ -36,7 +36,7 @@
 				<Field id="simpleSeparator3" type="separator"/>
 
 				<Field id='real_schedule_text' type='label'>
-					<Label>Set schedule to be used.  This schedule will be modified by the device actions and above variables, and it's action should be: Obsessive Sprinklers => Run Schedule, and pick this device.</Label>
+					<Label>Select the Indigo schedule to be used.  This schedule will be modified by the device actions and above variables, and it's action should be: Obsessive Sprinklers => Run Schedule, and pick this device.</Label>
 				</Field>
 
 				<Field id='real_schedule' type='menu'>
