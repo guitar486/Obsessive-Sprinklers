@@ -4,12 +4,6 @@
 
 	<Device type='custom' id='sprinkler_group'>
 		<Name>Sprinkler Group</Name>
-		<ConfigUI>
-			<Field id="indigo_sprinklers" type="list">
-				<Label>Indigo Sprinklers:</Label>
-				<List class="indigo.devices" filter="indigo.sprinkler"/>
-			</Field>
-		</ConfigUI>
 
 		<States>
 
@@ -33,6 +27,60 @@
 
 		</States>
 		<UiDisplayStateId>active_zone</UiDisplayStateId>
+
+		<ConfigUI>
+			<Field id='text1' type='label'>
+				<Label>Use this device-type to create a group of all of your sprinkler devices</Label>
+			</Field>
+
+			<Field id='sep1' type='separator'/>
+
+			<Field id="indigo_sprinklers" type="list">
+				<Label>Indigo Sprinklers:</Label>
+				<List class="indigo.devices" filter="indigo.sprinkler"/>
+			</Field>
+		</ConfigUI>
+
+	</Device>
+
+	<Device type='custom' id='sprinkler_link'>
+		<Name>Sprinkler Link</Name>
+
+		<!-- <States>
+
+			<State id='active_zone' defaultValue='Off'>
+				<ValueType>String</ValueType>
+				<TriggerLabel>Active Zone</TriggerLabel>
+				<ControlPageLabel>Active Zone</ControlPageLabel>
+			</State>
+
+			<State id='is_running' defaultValue='False'>
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Running</TriggerLabel>
+				<ControlPageLabel>Running</ControlPageLabel>
+			</State>
+
+			<State id='paused' defaultValue='False'>
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Paused</TriggerLabel>
+				<ControlPageLabel>Paused</ControlPageLabel>
+			</State>
+
+		</States>
+		<UiDisplayStateId>active_zone</UiDisplayStateId> -->
+
+		<ConfigUI>
+			<Field id='text1' type='label'>
+				<Label>Use this device-type to create a link of two or more sprinkler devices that you want to treat as one device for scheduling purposes</Label>
+			</Field>
+
+			<Field id='sep2' type='separator'/>
+
+			<Field id="indigo_sprinklers" type="list">
+				<Label>Indigo Sprinklers:</Label>
+				<List class="indigo.devices" filter="indigo.sprinkler"/>
+			</Field>
+		</ConfigUI>
 
 	</Device>
 

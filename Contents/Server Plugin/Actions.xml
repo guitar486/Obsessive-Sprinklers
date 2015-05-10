@@ -1,6 +1,6 @@
 <Actions>
 
-  <Action id='smart_zone_action'>
+  <Action id='smart_zone_action' deviceFilter='self.sprinkler_group'>
     <Name>Smart Zone Action</Name>
     <ConfigUI>
       <Field id="zone" type="menu">
@@ -11,7 +11,7 @@
     <CallbackMethod>smart_zone_action</CallbackMethod>
   </Action>
 
-  <Action id='pause_toggle'>
+  <Action id='pause_toggle' deviceFilter='self.sprinkler_group'>
     <Name>Pause Toggle</Name>
     <CallbackMethod>pause_toggle</CallbackMethod>
   </Action>

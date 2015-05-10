@@ -3,8 +3,6 @@
 ####################################################################################################
 
 import indigo
-import SprinklerDevice
-import ScheduleDevice
 from applescript import asrun, asquote
 
 ####################################################################################################
@@ -15,7 +13,8 @@ class Plugin(indigo.PluginBase):
         indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
 
         # Dict's for storing devices
-        self.schedule_device_dict = {}
+        # self.schedule_device_dict = {}
+        self.sprinkler_group_dict = {}
         self.device_dict = {}
         self.real_device_dict = {}
         self.active_sprinkler = {}
@@ -37,7 +36,11 @@ class Plugin(indigo.PluginBase):
         indigo.devices.subscribeToChanges()
 
         if device.model == 'Sprinkler Group':
-            self.sprinkler_group = device
+            self.sprinkler_group_dict[str(device.id)] = device
+
+        if device.model == 'Sprinkler Link':
+            indigo.server.log(str(device))
+
 
         # Store schedule device in dict
         # if device.model == 'Sprinkler Schedule Device':
@@ -51,7 +54,7 @@ class Plugin(indigo.PluginBase):
 
             # Create virtual sprinkler devices
             if (str(real_device.name)) not in self.real_device_dict.keys():
-                self.real_device_dict[str(real_device.id)] = SprinklerDevice.RealSprinkler(real_device)
+                self.real_device_dict[str(real_device.id)] = real_device
 
         # Check states on startup
         self.get_state()
@@ -64,6 +67,7 @@ class Plugin(indigo.PluginBase):
         # Update plugin device
         if str(origDev.pluginId) == 'com.perceptiveautomation.indigoplugin.obsessive-sprinklers':
             self.device_dict[str(newDev.id)] = newDev
+            self.deviceStartComm(newDev)
 
         # Update state of Sprinkler Group device if one of the real irrigation devices changes state
         if str(newDev.id) in self.real_device_dict.keys():
@@ -98,24 +102,26 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     # Update state of Sprinkler Group device if one of the real irrigation devices changes state
     def get_state(self):
-        running_list = []
-        for k, v in self.real_device_dict.iteritems():
-            paused = str(self.sprinkler_group.states.get('paused', ''))
-            if paused == 'False':
-                sprinkler = indigo.devices[int(k)]
-                if sprinkler.activeZone == None:
-                    running_list.append('off')
-                    if len(running_list) == len(self.real_device_dict.keys()):
-                        self.active_sprinkler = {}
-                        self.sprinkler_group.updateStateOnServer('active_zone', value='Off')
-                        self.sprinkler_group.updateStateOnServer('is_running', value='False')
 
-                elif sprinkler.activeZone != None:
-                    self.active_sprinkler[str(k)] = sprinkler.activeZone
-                    curZone = sprinkler.states.get('activeZone.ui', '')
-                    self.sprinkler_group.updateStateOnServer('active_zone', value=str(curZone))
-                    self.sprinkler_group.updateStateOnServer('is_running', value='True')
-                    break
+        for groupID, sprinklerGroup in self.sprinkler_group_dict.iteritems():
+            running_list = []
+            for k, v in self.real_device_dict.iteritems():
+                paused = str(sprinklerGroup.states.get('paused', ''))
+                if paused == 'False':
+                    sprinkler = indigo.devices[int(k)]
+                    if sprinkler.activeZone == None:
+                        running_list.append('off')
+                        if len(running_list) == len(self.real_device_dict.keys()):
+                            self.active_sprinkler = {}
+                            sprinklerGroup.updateStateOnServer('active_zone', value='Off')
+                            sprinklerGroup.updateStateOnServer('is_running', value='False')
+
+                    elif sprinkler.activeZone != None:
+                        self.active_sprinkler[str(k)] = sprinkler.activeZone
+                        curZone = sprinkler.states.get('activeZone.ui', '')
+                        sprinklerGroup.updateStateOnServer('active_zone', value=str(curZone))
+                        sprinklerGroup.updateStateOnServer('is_running', value='True')
+                        break
 
     ####################################################################################################
     # Run Schedule
@@ -127,7 +133,9 @@ class Plugin(indigo.PluginBase):
     # Execute Smart Zone Action
     ####################################################################################################
     def smart_zone_action(self, pluginAction):
-        is_running = self.sprinkler_group.states.get('is_running', '')
+
+        sprinklerGroup = self.sprinkler_group_dict[str(pluginAction.deviceId)]
+        is_running = sprinklerGroup.states.get('is_running', '')
         sprinkID = str(pluginAction.props['zone'].split(':')[0])
         zone = str(pluginAction.props['zone'].split(':')[1].strip())
         zoneCount = indigo.devices[int(sprinkID)].zoneCount
@@ -191,15 +199,12 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     # Generate list of enabled zones
     ####################################################################################################
-    def myListGenerator(self, filter="", valuesDict=None, typeId="", targetId=0):
+    def myListGenerator(self, filter="self", valuesDict=None, typeId="", targetId=0):
         myArray = []
         for k, v in self.real_device_dict.iteritems():
-            # real_device = indigo.devices[int(device)]
-
-            for i in xrange(len(v.sprinkler.zoneEnableList)):
-                if v.sprinkler.zoneEnableList[i] == True:
-                    myArray.append([str(v.sprinkler.id) + ':' + str(i+1), str(v.sprinkler.zoneNames[i])])
-
+            for i in xrange(len(v.zoneEnableList)):
+                if v.zoneEnableList[i] == True:
+                    myArray.append([str(v.id) + ':' + str(i+1), str(v.zoneNames[i])])
     	return myArray
 
     # ####################################################################################################
