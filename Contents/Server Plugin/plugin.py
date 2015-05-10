@@ -105,8 +105,8 @@ class Plugin(indigo.PluginBase):
                 sprinkler = indigo.devices[int(k)]
                 if sprinkler.activeZone == None:
                     running_list.append('off')
-                    self.active_sprinkler = {}
                     if len(running_list) == len(self.real_device_dict.keys()):
+                        self.active_sprinkler = {}
                         self.sprinkler_group.updateStateOnServer('active_zone', value='Off')
                         self.sprinkler_group.updateStateOnServer('is_running', value='False')
 
@@ -120,7 +120,7 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     # Run Schedule
     ####################################################################################################
-    def run_schedule(self, pluginAction):
+    def run_single_cycle(self, pluginAction):
         pass
 
     ####################################################################################################
@@ -181,6 +181,12 @@ class Plugin(indigo.PluginBase):
             self.sprinkler_group.updateStateOnServer('active_zone', value=self.paused_zone)
             self.sprinkler_group.updateStateOnServer('is_running', value='True')
             self.sprinkler_group.updateStateOnServer('paused', value='False')
+
+    ####################################################################################################
+    # Cancel active cycle
+    ####################################################################################################
+    def cancel_active_cycle(self, pluginAction):
+        indigo.sprinkler.stop(int(self.active_sprinkler.keys()[0]))
 
     ####################################################################################################
     # Generate list of enabled zones

@@ -16,6 +16,16 @@
     <CallbackMethod>pause_toggle</CallbackMethod>
   </Action>
 
+  <Action id='cancel_active_cycle'>
+    <Name>Cancel Active Cycle</Name>
+    <CallbackMethod>cancel_active_cycle</CallbackMethod>
+  </Action>
+
+  <Action id='run_single_cycle'>
+    <Name>Run Single Cycle</Name>
+    <CallbackMethod>run_single_cycle</CallbackMethod>
+  </Action>
+
 
   <!-- <Action id="set_scheduled_days" deviceFilter='self'>
     <Name>Set Day</Name>
