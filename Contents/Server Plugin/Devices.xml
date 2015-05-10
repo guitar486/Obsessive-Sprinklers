@@ -2,7 +2,41 @@
 
 <Devices>
 
-		<Device type="custom" id="irrigation_schedule_device">
+	<Device type='custom' id='sprinkler_group'>
+		<Name>Sprinkler Group</Name>
+		<ConfigUI>
+			<Field id="indigo_sprinklers" type="list">
+				<Label>Indigo Sprinklers:</Label>
+				<List class="indigo.devices" filter="indigo.sprinkler"/>
+			</Field>
+		</ConfigUI>
+
+		<States>
+
+			<State id='active_zone' defaultValue='Off'>
+				<ValueType>String</ValueType>
+				<TriggerLabel>Active Zone</TriggerLabel>
+				<ControlPageLabel>Active Zone</ControlPageLabel>
+			</State>
+
+			<State id='is_running' defaultValue='False'>
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Running</TriggerLabel>
+				<ControlPageLabel>Running</ControlPageLabel>
+			</State>
+
+			<State id='paused' defaultValue='False'>
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Paused</TriggerLabel>
+				<ControlPageLabel>Paused</ControlPageLabel>
+			</State>
+
+		</States>
+		<UiDisplayStateId>active_zone</UiDisplayStateId>
+
+	</Device>
+
+		<!-- <Device type="custom" id="irrigation_schedule_device">
 			<Name>Irrigation Schedule Device</Name>
 			<ConfigUI>
 
@@ -43,17 +77,6 @@
 					<Label></Label>
 					<List class='indigo.schedules'/>
 				</Field>
-
-				<!-- <Field id="simpleSeparator3" type="separator"/>
-
-				<Field id='run_single_text' type='label'>
-					<Label>Set zone durations for the "Run Single Zone" action with a variable.</Label>
-				</Field>
-
-				<Field id='run_single_zone_time_variable' type='menu'>
-					<Label></Label>
-					<List class='indigo.variables'/>
-				</Field> -->
 
 			</ConfigUI>
 
@@ -120,6 +143,7 @@
 				</State>
 
 			</States>
-		</Device>
+		</Device> -->
+
 
 </Devices>

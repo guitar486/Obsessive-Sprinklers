@@ -1,6 +1,23 @@
 <Actions>
 
-  <Action id="set_scheduled_days" deviceFilter='self'>
+  <Action id='smart_zone_action'>
+    <Name>Smart Zone Action</Name>
+    <ConfigUI>
+      <Field id="zone" type="menu">
+        <Label>Zones:</Label>
+        <List class="self" filter="" method="myListGenerator"/>
+      </Field>
+    </ConfigUI>
+    <CallbackMethod>smart_zone_action</CallbackMethod>
+  </Action>
+
+  <Action id='pause_toggle'>
+    <Name>Pause Toggle</Name>
+    <CallbackMethod>pause_toggle</CallbackMethod>
+  </Action>
+
+
+  <!-- <Action id="set_scheduled_days" deviceFilter='self'>
     <Name>Set Day</Name>
     <ConfigUI>
       <Field type="menu" id="action" defaultValue="item1">
@@ -37,6 +54,6 @@
   <Action id='run_schedule' deviceFilter='self'>
     <Name>Run Schedule</Name>
     <CallbackMethod>run_schedule</CallbackMethod>
-  </Action>
+  </Action> -->
 
 </Actions>
