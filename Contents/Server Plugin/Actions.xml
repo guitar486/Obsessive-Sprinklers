@@ -5,7 +5,7 @@
     <ConfigUI>
       <Field id="zone" type="menu">
         <Label>Zones:</Label>
-        <List class="self" filter="" method="myListGenerator"/>
+        <List class="self" filter="" method="smartZoneGenerator"/>
       </Field>
     </ConfigUI>
     <CallbackMethod>smart_zone_action</CallbackMethod>
@@ -23,6 +23,12 @@
 
   <Action id='run_single_cycle'>
     <Name>Run Single Cycle</Name>
+    <ConfigUI>
+      <Field id="targetDevice" type="menu">
+        <Label>Sprinkler:</Label>
+        <List class="self" filter="" method="runSingleCycleGenerator"/>
+      </Field>
+    </ConfigUI>
     <CallbackMethod>run_single_cycle</CallbackMethod>
   </Action>
 

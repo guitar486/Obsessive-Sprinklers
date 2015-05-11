@@ -15,6 +15,7 @@ class Plugin(indigo.PluginBase):
         # Dict's for storing devices
         # self.schedule_device_dict = {}
         self.sprinkler_group_dict = {}
+        self.sprinkler_link_dict = {}
         self.device_dict = {}
         self.real_device_dict = {}
         self.active_sprinkler = {}
@@ -24,8 +25,8 @@ class Plugin(indigo.PluginBase):
 
     def startup(self):
         indigo.server.log('Obsessive Sprinklers started.')
-
         self.debugging = False
+
     ####################################################################################################
 	# Actions here execute every time communication is enabled to a device
 	####################################################################################################
@@ -39,7 +40,17 @@ class Plugin(indigo.PluginBase):
             self.sprinkler_group_dict[str(device.id)] = device
 
         if device.model == 'Sprinkler Link':
-            indigo.server.log(str(device))
+            self.sprinkler_link_dict[str(device.id)] = device
+
+            # # If a cycle is running on a link-device
+            # self.program == device.states.get('program', ''):
+            #     if self.program == 'True':
+            #         pass
+
+
+        # Update our copy of the device
+        self.device_dict[str(device.id)] = device
+
 
 
         # Store schedule device in dict
@@ -68,6 +79,16 @@ class Plugin(indigo.PluginBase):
         if str(origDev.pluginId) == 'com.perceptiveautomation.indigoplugin.obsessive-sprinklers':
             self.device_dict[str(newDev.id)] = newDev
             self.deviceStartComm(newDev)
+
+        ####################################################################################################
+        # Linking - ADD PROPER ZONE TIME VARS WHEN IMPLEMENTED
+        ####################################################################################################
+        if origDev.model == 'Sprinkler Link':
+            if origDev.states.get('active_zone', '') == self.last_zone:
+                if origDev.states.get('program', '') == 'True':
+                    linkedSprinklerID = self.linked_sprinkler.id
+                    indigo.sprinkler.run(linkedSprinklerID, schedule=[5,5,5,5,5,5,5,5])
+                    origDev.updateStateOnServer('program', 'False')
 
         # Update state of Sprinkler Group device if one of the real irrigation devices changes state
         if str(newDev.id) in self.real_device_dict.keys():
@@ -103,31 +124,61 @@ class Plugin(indigo.PluginBase):
     # Update state of Sprinkler Group device if one of the real irrigation devices changes state
     def get_state(self):
 
-        for groupID, sprinklerGroup in self.sprinkler_group_dict.iteritems():
+        for groupID, pluginDevice in self.device_dict.iteritems():
             running_list = []
             for k, v in self.real_device_dict.iteritems():
-                paused = str(sprinklerGroup.states.get('paused', ''))
+                paused = str(pluginDevice.states.get('paused', ''))
                 if paused == 'False':
                     sprinkler = indigo.devices[int(k)]
                     if sprinkler.activeZone == None:
                         running_list.append('off')
                         if len(running_list) == len(self.real_device_dict.keys()):
                             self.active_sprinkler = {}
-                            sprinklerGroup.updateStateOnServer('active_zone', value='Off')
-                            sprinklerGroup.updateStateOnServer('is_running', value='False')
+                            pluginDevice.updateStateOnServer('active_zone', value='Off')
+                            pluginDevice.updateStateOnServer('is_running', value='False')
 
                     elif sprinkler.activeZone != None:
                         self.active_sprinkler[str(k)] = sprinkler.activeZone
                         curZone = sprinkler.states.get('activeZone.ui', '')
-                        sprinklerGroup.updateStateOnServer('active_zone', value=str(curZone))
-                        sprinklerGroup.updateStateOnServer('is_running', value='True')
+                        pluginDevice.updateStateOnServer('active_zone', value=str(curZone))
+                        pluginDevice.updateStateOnServer('is_running', value='True')
                         break
 
     ####################################################################################################
     # Run Schedule
     ####################################################################################################
     def run_single_cycle(self, pluginAction):
-        pass
+
+        sprinkler = indigo.devices[int(pluginAction.props['targetDevice'].split(':')[0])]
+        # indigo.server.log(str(sprinkler.name))
+
+        # If it's a "Sprinker Link" device
+        if pluginAction.props['targetDevice'].split(':')[1] == 'link':
+            # Set Program state to True
+            sprinkler.updateStateOnServer('program', 'True')
+            ####
+            indigo.server.log(sprinkler.states.get('program', ''))
+
+            real_sprinklers_ids = sprinkler.pluginProps['indigo_sprinklers']
+            realSprinkler1 = indigo.devices[int(real_sprinklers_ids[0])]
+            self.linked_sprinkler = indigo.devices[int(real_sprinklers_ids[1])]
+
+            zoneMaxDurations = realSprinkler1.zoneMaxDurations
+            for i, e in reversed(list(enumerate(zoneMaxDurations))):
+                if e > 0:
+                    indigo.server.log('last zone enabled is: zone ' + str(i+1) + ' ' + str(realSprinkler1.zoneNames[i]))
+                    self.last_zone = str(realSprinkler1.zoneNames[i])
+                    break
+
+            # ADD PROPER ZONE TIME VARS WHEN IMPLEMENTED
+            indigo.sprinkler.run(realSprinkler1, schedule=[5,5,5,5,5,5,5,5])
+
+            # indigo.server.log(str(realSprinkler.name))
+            # indigo.server.log(str(realSprinkler.zoneMaxDurations))
+
+        # If it's a regular (real) sprinkler device
+        else:
+            indigo.server.log('reg')
 
     ####################################################################################################
     # Execute Smart Zone Action
@@ -151,7 +202,7 @@ class Plugin(indigo.PluginBase):
                         smartSchedule.append(0)
                     elif z == int(zone):
                         #########################################################################################
-                        # Change to get proper zone time later when implemented!!!!!!
+                        # ADD PROPER ZONE TIME VAR WHEN IMPLEMENTED
                         smartSchedule.append(5)
                         #########################################################################################
 
@@ -199,12 +250,23 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     # Generate list of enabled zones
     ####################################################################################################
-    def myListGenerator(self, filter="self", valuesDict=None, typeId="", targetId=0):
+    def smartZoneGenerator(self, filter="self", valuesDict=None, typeId="", targetId=0):
         myArray = []
         for k, v in self.real_device_dict.iteritems():
             for i in xrange(len(v.zoneEnableList)):
                 if v.zoneEnableList[i] == True:
                     myArray.append([str(v.id) + ':' + str(i+1), str(v.zoneNames[i])])
+
+    	return myArray
+
+    def runSingleCycleGenerator(self, filter="self", valuesDict=None, typeId="", targetId=0):
+        myArray = []
+        for k, v in self.real_device_dict.iteritems():
+            myArray.append([str(v.id) + ':', str(v.name)])
+
+        for k, v in self.sprinkler_link_dict.iteritems():
+            myArray.append([str(v.id) + ':' + 'link', str(v.name)])
+
     	return myArray
 
     # ####################################################################################################

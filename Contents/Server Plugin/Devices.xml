@@ -30,7 +30,7 @@
 
 		<ConfigUI>
 			<Field id='text1' type='label'>
-				<Label>Use this device-type to create a group of all of your sprinkler devices</Label>
+				<Label>Use this device-type to create a group of ALL of your sprinkler devices</Label>
 			</Field>
 
 			<Field id='sep1' type='separator'/>
@@ -46,7 +46,7 @@
 	<Device type='custom' id='sprinkler_link'>
 		<Name>Sprinkler Link</Name>
 
-		<!-- <States>
+		<States>
 
 			<State id='active_zone' defaultValue='Off'>
 				<ValueType>String</ValueType>
@@ -66,8 +66,14 @@
 				<ControlPageLabel>Paused</ControlPageLabel>
 			</State>
 
+			<State id='program' defaultValue='False'>
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Program</TriggerLabel>
+				<ControlPageLabel>Program</ControlPageLabel>
+			</State>
+
 		</States>
-		<UiDisplayStateId>active_zone</UiDisplayStateId> -->
+		<UiDisplayStateId>active_zone</UiDisplayStateId>
 
 		<ConfigUI>
 			<Field id='text1' type='label'>
