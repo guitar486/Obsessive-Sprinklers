@@ -84,7 +84,7 @@ class Plugin(indigo.PluginBase):
         # Linking - ADD PROPER ZONE TIME VARS WHEN IMPLEMENTED
         ####################################################################################################
         if origDev.model == 'Sprinkler Link':
-            if origDev.states.get('active_zone', '') == self.last_zone:
+            if origDev.states.get('active_zone', '') == origDev.states.get('link_zone', ''):
                 if origDev.states.get('program', '') == 'True':
                     linkedSprinklerID = self.linked_sprinkler.id
                     indigo.sprinkler.run(linkedSprinklerID, schedule=[5,5,5,5,5,5,5,5])
@@ -167,7 +167,8 @@ class Plugin(indigo.PluginBase):
             for i, e in reversed(list(enumerate(zoneMaxDurations))):
                 if e > 0:
                     indigo.server.log('last zone enabled is: zone ' + str(i+1) + ' ' + str(realSprinkler1.zoneNames[i]))
-                    self.last_zone = str(realSprinkler1.zoneNames[i])
+                    sprinkler.updateStateOnServer('link_zone', str(realSprinkler1.zoneNames[i]))
+                    indigo.server.log('link zone: ' + str(realSprinkler1.zoneNames[i]))
                     break
 
             # ADD PROPER ZONE TIME VARS WHEN IMPLEMENTED
@@ -246,6 +247,9 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     def cancel_active_cycle(self, pluginAction):
         indigo.sprinkler.stop(int(self.active_sprinkler.keys()[0]))
+
+        for k, v in self.sprinkler_link_dict.iteritems():
+            v.updateStateOnServer('program', 'False')
 
     ####################################################################################################
     # Generate list of enabled zones

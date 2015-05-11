@@ -72,6 +72,12 @@
 				<ControlPageLabel>Program</ControlPageLabel>
 			</State>
 
+			<State id='link_zone'>
+				<ValueType>String</ValueType>
+				<TriggerLabel>Link Zone</TriggerLabel>
+				<ControlPageLabel>Link Zone</ControlPageLabel>
+			</State>
+
 		</States>
 		<UiDisplayStateId>active_zone</UiDisplayStateId>
 
