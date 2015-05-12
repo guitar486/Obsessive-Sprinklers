@@ -12,12 +12,16 @@ class Plugin(indigo.PluginBase):
     def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
         indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
 
-        # Dict's for storing devices
-        # self.schedule_device_dict = {}
+        # Dict's for storing devices {'12345':DEVICE}
+        self.p_device_dict = {}
         self.sprinkler_group_dict = {}
         self.sprinkler_link_dict = {}
-        self.device_dict = {}
+        self.schedule_device_dict = {}
+
+        # Dict for storing real sprinkler devices {'12345':DEVICE}
         self.real_device_dict = {}
+
+        # Dict for storing current active sprinkler and it's device id {'12345':activeZone}
         self.active_sprinkler = {}
 
     def __del__(self):
@@ -49,14 +53,14 @@ class Plugin(indigo.PluginBase):
 
 
         # Update our copy of the device
-        self.device_dict[str(device.id)] = device
+        self.p_device_dict[str(device.id)] = device
 
 
 
         # Store schedule device in dict
         # if device.model == 'Sprinkler Schedule Device':
-        #     if str(device.id) not in self.device_dict.keys():
-        #         self.device_dict[str(device.id)] = ScheduleDevice.Schedule(device)
+        #     if str(device.id) not in self.p_device_dict.keys():
+        #         self.p_device_dict[str(device.id)] = ScheduleDevice.Schedule(device)
 
         # Get list of user-selected real Indigo sprinkler devices and create objects from them
         items = device.pluginProps.get('indigo_sprinklers', '')
@@ -77,7 +81,7 @@ class Plugin(indigo.PluginBase):
 
         # Update plugin device
         if str(origDev.pluginId) == 'com.perceptiveautomation.indigoplugin.obsessive-sprinklers':
-            self.device_dict[str(newDev.id)] = newDev
+            self.p_device_dict[str(newDev.id)] = newDev
             self.deviceStartComm(newDev)
 
         ####################################################################################################
@@ -98,8 +102,8 @@ class Plugin(indigo.PluginBase):
     # Remove device from our device_dict if it is deleted in Indigo
     ####################################################################################################
     def deviceDeleted(self, device):
-        if str(device.id) in self.device_dict.keys():
-            del self.device_dict[str(device.id)]
+        if str(device.id) in self.p_device_dict.keys():
+            del self.p_device_dict[str(device.id)]
 
         #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
         if self.debugging == True:
@@ -114,7 +118,7 @@ class Plugin(indigo.PluginBase):
 
         #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
         if self.debugging == True:
-            indigo.server.log(str(self.device_dict.keys()))
+            indigo.server.log(str(self.p_device_dict.keys()))
             indigo.server.log(str(self.real_device_dict.keys()))
         #>>>>>>>>>>DEBUGGING<<<<<<<<<<#
 
@@ -124,7 +128,7 @@ class Plugin(indigo.PluginBase):
     # Update state of Sprinkler Group device if one of the real irrigation devices changes state
     def get_state(self):
 
-        for groupID, pluginDevice in self.device_dict.iteritems():
+        for groupID, pluginDevice in self.p_device_dict.iteritems():
             running_list = []
             for k, v in self.real_device_dict.iteritems():
                 paused = str(pluginDevice.states.get('paused', ''))
@@ -281,7 +285,7 @@ class Plugin(indigo.PluginBase):
     # def set_scheduled_days(self, pluginAction):
     #
     #     deviceId = pluginAction.deviceId
-    #     device = self.device_dict.get(str(deviceId))
+    #     device = self.p_device_dict.get(str(deviceId))
     #     action = pluginAction.pluginTypeId
     #     scheduleName = indigo.schedules[int(device.pluginProps.get('real_schedule', ''))].name
     #
@@ -425,7 +429,7 @@ class Plugin(indigo.PluginBase):
     #
     #     # Create dict of start time variables as selected in device setup
     #     start_time_vars = {}
-    #     for deviceId, device in self.device_dict.items():
+    #     for deviceId, device in self.p_device_dict.items():
     #         start_time_vars[str(device.schedule.pluginProps.get('start_time_variable', ''))] = device
     #
     #     # If start Time var changed, run set_scheduled_start_time() to update the actual Indigo schedule
@@ -476,7 +480,7 @@ class Plugin(indigo.PluginBase):
     # def run_schedule(self, pluginAction):
     #
     #     deviceId = pluginAction.deviceId
-    #     device = self.device_dict.get(str(deviceId))
+    #     device = self.p_device_dict.get(str(deviceId))
     #     realDevice = int(device.pluginProps.get('realIrrDevice', ''))
     #
     #     zoneTimesVar = device.pluginProps.get('zone_times_variable', '')
