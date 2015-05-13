@@ -14,7 +14,7 @@ class Plugin(indigo.PluginBase):
 
         # Dict's for storing devices {'12345':DEVICE}
         self.p_device_dict = {}
-        self.sprinkler_group_dict = {}
+        # self.sprinkler_group_dict = {}
         self.sprinkler_link_dict = {}
         self.schedule_device_dict = {}
 
@@ -41,7 +41,7 @@ class Plugin(indigo.PluginBase):
         indigo.devices.subscribeToChanges()
 
         if device.model == 'Sprinkler Group':
-            self.sprinkler_group_dict[str(device.id)] = device
+            self.sprinkler_group = device
 
         if device.model == 'Sprinkler Link':
             self.sprinkler_link_dict[str(device.id)] = device
@@ -54,6 +54,12 @@ class Plugin(indigo.PluginBase):
 
         # Update our copy of the device
         self.p_device_dict[str(device.id)] = device
+
+        ####
+        # self.sprinkler_group.updateStateOnServer('paused', value='False')
+        # for groupID, pluginDevice in self.p_device_dict.iteritems():
+        #     pluginDevice.updateStateOnServer('active_zone', value='Off')
+        #     pluginDevice.updateStateOnServer('is_running', value='False')
 
 
 
@@ -75,7 +81,7 @@ class Plugin(indigo.PluginBase):
         self.get_state()
 
     ####################################################################################################
-    # Update device in our device_dict if anything changes
+    # Update device in our p_device_dict if anything changes
     ####################################################################################################
     def deviceUpdated(self, origDev, newDev):
 
@@ -190,7 +196,7 @@ class Plugin(indigo.PluginBase):
     ####################################################################################################
     def smart_zone_action(self, pluginAction):
 
-        sprinklerGroup = self.sprinkler_group_dict[str(pluginAction.deviceId)]
+        sprinklerGroup = self.sprinkler_group
         is_running = sprinklerGroup.states.get('is_running', '')
         sprinkID = str(pluginAction.props['zone'].split(':')[0])
         zone = str(pluginAction.props['zone'].split(':')[1].strip())
@@ -234,15 +240,15 @@ class Plugin(indigo.PluginBase):
         paused = str(self.sprinkler_group.states.get('paused', ''))
 
         if paused == 'False':
-            self.paused_zone = self.sprinkler_group.states.get('active_zone', '')
+            self.paused = [str(self.active_sprinkler.keys()[0]), str(self.sprinkler_group.states.get('active_zone', ''))]
             indigo.sprinkler.pause(int(self.active_sprinkler.keys()[0]))
             self.sprinkler_group.updateStateOnServer('active_zone', value='Paused')
             self.sprinkler_group.updateStateOnServer('is_running', value='False')
             self.sprinkler_group.updateStateOnServer('paused', value='True')
 
         else:
-            indigo.sprinkler.resume(int(self.active_sprinkler.keys()[0]))
-            self.sprinkler_group.updateStateOnServer('active_zone', value=self.paused_zone)
+            indigo.sprinkler.resume(int(self.paused[0]))
+            self.sprinkler_group.updateStateOnServer('active_zone', value=str(self.paused[1]))
             self.sprinkler_group.updateStateOnServer('is_running', value='True')
             self.sprinkler_group.updateStateOnServer('paused', value='False')
 
